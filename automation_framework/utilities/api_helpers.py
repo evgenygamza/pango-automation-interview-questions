@@ -1,11 +1,15 @@
 import requests
 
+BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+API_KEY = "f88d54cd8eddb5d1f23ff82a80b95fec"
+
 
 class ApiHelper:
-    BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
-    API_KEY = "f88d54cd8eddb5d1f23ff82a80b95fec"
-    UNITS = "standard"
-    LANG = "en"
+    def __init__(self):
+        self.url = BASE_URL
+        self.key = API_KEY
+        self.UNITS = "metric"
+        self.LANG = "en"
 
     @staticmethod
     def get_temp_and_feels_like_from_resp(response):
@@ -23,7 +27,7 @@ class ApiHelper:
         return (resp["temp_min"] + resp["temp_max"]) / 2
 
     def compose_url(self, **params):
-        return f"{self.BASE_URL}?{'&'.join(f'{key}={value}' for key, value in params.items())}&appid={self.API_KEY}"
+        return f"{self.url}?{'&'.join(f'{key}={value}' for key, value in params.items())}&appid={self.key}"
 
     def get_current_weather_by_city_name(self, city):
         url = self.compose_url(units=self.UNITS, lang=self.LANG, q=city)
