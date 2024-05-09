@@ -2,6 +2,7 @@ import pytest
 import configparser
 from automation_framework.utilities.api_helpers import ApiHelper
 from automation_framework.utilities.db_helpers import DatabaseHelper
+from automation_framework.utilities.timeanddate_com import TndParser
 
 
 @pytest.fixture
@@ -46,11 +47,33 @@ def city():
         db.delete_from_table(city_name)
 
 
+@pytest.fixture()
+def data_from_timeanddate(db, api):
+    tnd_cities = TndParser.parse_cities()
+    tnd_data = []
+    owm_data = []
+    for tnd_city in tnd_cities:
+        try:
+            tnd_weather = tnd_cities[tnd_city]
+            tnd_data.append((tnd_city, tnd_weather))
+
+            response = api.get_current_weather_by_city_name(city=tnd_city)
+            if response.status_code is 200:
+                owm_row = api.get_temp_and_feels_like_from_resp(response)
+                owm_data.append((tnd_city, *owm_row))
+        except:
+            pass
+    db.insert_many_rows(db.TND_TABLE, tnd_data)
+    db.insert_many_rows(db.OWM_TABLE, owm_data)
+    return
+
+
 @pytest.fixture(autouse=True, scope="class")
 def drop_table():
     yield
     with DatabaseHelper() as db:
-        db.drop_table()
+        db.drop_table(db.TND_TABLE)
+        db.drop_table(db.OWM_TABLE)
 
 
 class TestOpenweatherApi:
@@ -64,6 +87,7 @@ class TestOpenweatherApi:
         db.insert_weather_data(city=city, temperature=temperature, feels_like=feels_like)
         db_temperature, db_feels_like = db.get_weather_data(city)[1:3]
 
+        assert response.status_code is 200
         assert name == city, f"Something wrong with city name"
         assert temperature < 200, f"Units are not standard"
         assert temperature == db_temperature, f"Temperature mismatch for {city}"
@@ -108,3 +132,18 @@ class TestOpenweatherApi:
     @pytest.mark.parametrize("use_conf", [True, False])
     def test_custom_db_config(self, db, use_conf):
         assert isinstance(db, DatabaseHelper)
+
+    @pytest.mark.skip(reason="Too slow")
+    #  3 Bonus Question: City Temperature Discrepancy Analysis
+    def test_weather_reports_analysis(self, data_from_timeanddate, api, db):
+        result = db.compare_two_sources()
+        max = db.max_diff()
+        min = db.max_diff(asc=True)
+
+        print("\n")
+        print("The temperature discrepancy analysis")
+        for l in result:
+            print(l[0][3:], l[1], "cities")
+        print("\n")
+        print("Max in OpenWeatherMap:", *max, "degrees more than in TimeAndDate:")
+        print("Max in TimeAndDate:", min[0], abs(min[1]), "degrees more than in OpenWeatherMap")
