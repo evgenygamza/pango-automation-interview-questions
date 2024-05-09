@@ -32,7 +32,6 @@ class ApiHelper:
     def get_current_weather_by_city_name(self, city):
         url = self.compose_url(units=self.UNITS, lang=self.LANG, q=city)
         response = requests.get(url)
-        assert response.status_code is 200, "Something goes wrong with response from openweather api"
         return response
 
     def get_current_weather_by_city_id(self, city_id):
