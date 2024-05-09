@@ -12,6 +12,7 @@ class TndParser:
 
     @staticmethod
     def parse_cities():
+        # I remember that a Selenium script was expected here, but this way is much faster
         html_content = requests.get(TND_URL).text
         soup = BeautifulSoup(html_content, 'lxml')
         weather_table = soup.find("table")

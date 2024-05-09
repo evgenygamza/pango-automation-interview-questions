@@ -112,20 +112,6 @@ class DatabaseHelper:
                 """)
         return self.cursor.fetchall()
 
-    def old_max_diff(self, min_or_max):
-        self.cursor.execute(f"""
-            SELECT
-                wd.city,
-                {min_or_max}(wd.temperature - tw.weather) AS difference
-            FROM
-                {self.OWM_TABLE} wd
-            JOIN
-                {self.TND_TABLE} tw ON wd.city = tw.city
-            GROUP BY
-                wd.city;
-                                """)
-        return self.cursor.fetchall()
-
     def max_diff(self, asc=False):
         query = (f"SELECT wd.city, (wd.temperature - tw.weather) AS difference "
                  f"FROM {self.OWM_TABLE} wd JOIN {self.TND_TABLE} tw ON wd.city = tw.city "
