@@ -59,7 +59,7 @@ class DatabaseHelper:
 
     #  city, temperature, feels_like, average_temp
     def insert_weather_data(self, **columns):
-        query = (f"INSERT OR IGNORE INTO {self.OWM_TABLE} ({", ".join(key for key in columns.keys())}) "
+        query = (f"INSERT OR IGNORE INTO {self.OWM_TABLE} ({', '.join(key for key in columns.keys())}) "
                  f"VALUES ({', '.join("'" + str(val) + "'" if isinstance(val, str) else str(val) for val in columns.values())});")
         self.cursor.execute(query)
         self.conn.commit()
