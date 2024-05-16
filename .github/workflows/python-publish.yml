@@ -24,7 +24,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8  # укажите нужную версию Python
+        python-version: 3.12
 
     - name: Create virtual environment
       run: python -m venv venv
@@ -44,5 +44,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: test-results
-        path: test-results.xml  # замените на файл с результатами тестов, если есть
+        path: test-results.xml
 

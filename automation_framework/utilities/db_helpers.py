@@ -41,7 +41,7 @@ class DatabaseHelper:
         try:
             self.cursor.execute(f"DROP TABLE IF EXISTS {table};")
             self.conn.commit()
-            print(f"Table '{table}' dropped successfully")
+            # print(f"Table '{table}' dropped successfully")
         except sqlite3.Error as error:
             print("Error during table drop: ", error)
 
