@@ -11,7 +11,8 @@ name: Run Tests and Publish Results
 on:
   push:
     branches:
-      - main  # замените на имя вашей основной ветки
+      - main
+      - dev
 
 jobs:
   test_and_publish:
