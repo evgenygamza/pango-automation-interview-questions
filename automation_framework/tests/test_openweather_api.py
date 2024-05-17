@@ -1,4 +1,5 @@
 import pytest
+import os
 import configparser
 from automation_framework.utilities.api_helpers import ApiHelper
 from automation_framework.utilities.db_helpers import DatabaseHelper
@@ -15,7 +16,8 @@ def api(use_conf):
     api = ApiHelper()
     if use_conf:
         config = configparser.ConfigParser()
-        config.read('../config/config.ini')
+        config_path = os.path.join(os.path.dirname(__file__), '../config/config.ini')
+        config.read(config_path)
         api.url = config['API']['API_URL']
         api.key = config['API']['API_KEY']
     return api
@@ -26,7 +28,8 @@ def db(use_conf):
     with DatabaseHelper() as db:
         if use_conf:
             config = configparser.ConfigParser()
-            config.read('../config/config.ini')
+            config_path = os.path.join(os.path.dirname(__file__), '../config/config.ini')
+            config.read(config_path)
             db.url = config['DB']['DB_NAME']
         yield db
 
