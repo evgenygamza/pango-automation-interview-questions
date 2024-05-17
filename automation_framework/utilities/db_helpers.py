@@ -60,15 +60,15 @@ class DatabaseHelper:
     #  city, temperature, feels_like, average_temp
     def insert_weather_data(self, **columns):
         query = (f"INSERT OR IGNORE INTO {self.OWM_TABLE} ({', '.join(key for key in columns.keys())}) "
-                 f"VALUES ({', '.join("'" + str(val) + "'" if isinstance(val, str) else str(val) for val in columns.values())});")
-        self.cursor.execute(query)
+                 f"VALUES ({', '.join('?' for _ in columns)});")
+        self.cursor.execute(query, tuple(columns.values()))
         self.conn.commit()
 
     #  city, weather
     def insert_into_timeanddate(self, **columns):
         query = (f"INSERT OR IGNORE INTO {self.TND_TABLE} ({", ".join(key for key in columns.keys())}) "
-                 f"VALUES ({', '.join("'" + str(val) + "'" if isinstance(val, str) else str(val) for val in columns.values())});")
-        self.cursor.execute(query)
+                 f"VALUES ({', '.join('?' for _ in columns)});")
+        self.cursor.execute(query, tuple(columns.values()))
         self.conn.commit()
 
     def insert_many_rows(self, table_name, rows):
